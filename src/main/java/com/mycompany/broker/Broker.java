@@ -31,20 +31,7 @@ public class Broker {
             bufferedWriter.newLine();
             bufferedWriter.flush();
 
-            
-//            new Thread(new Runnable(){
-//            @Override
-//            public void run(){
-//                
-//                while(socket.isConnected()){
-//                    try{
-//                        respuesta= bufferedReader.readLine();
-//                    } catch (IOException e){
-//                        e.printStackTrace();
-//                    }
-//                }
-//            }
-//            }).start();
+           
             respuesta= bufferedReader.readLine();
             
         } catch(IOException e){
