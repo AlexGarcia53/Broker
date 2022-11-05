@@ -22,7 +22,7 @@ import java.util.logging.Logger;
  * @author Admin
  */
 public class ControladorClientes implements Runnable{
-    public static ArrayList<ControladorClientes> clientHandlers= new ArrayList<>();
+    public static ArrayList<ControladorClientes> controladorClientes= new ArrayList<>();
     private Socket socket;
     private BufferedReader bufferedReader;
     private BufferedWriter bufferedWriter;
@@ -40,10 +40,10 @@ public class ControladorClientes implements Runnable{
             this.inputStream= new ObjectInputStream(socket.getInputStream());
             this.clientUsername= bufferedReader.readLine();
             System.out.println(clientUsername+ "se ha conectado");
-            clientHandlers.add(this);
-            this.broker=new Broker();
+            controladorClientes.add(this);
+            this.broker= Broker.obtenerInstancia();
         } catch (IOException e){
-            closeEverything(socket, bufferedReader, bufferedWriter);
+            cerrarTodo(socket, bufferedReader, bufferedWriter);
         }
         
     }
@@ -62,47 +62,47 @@ public class ControladorClientes implements Runnable{
                     enviarRespuesta(respuesta);
                 }
             }catch(IOException e){
-                closeEverything(socket, bufferedReader, bufferedWriter);
+                cerrarTodo(socket, bufferedReader, bufferedWriter);
                 break;
             }
         }
     }
     
     public void enviarRespuesta(String respuesta){
-        for (ControladorClientes clientHandler: clientHandlers) {
+        for (ControladorClientes controladorCliente: controladorClientes) {
             try{
-                if(clientHandler.clientUsername.equals(clientUsername)){
-                    clientHandler.bufferedWriter.write(respuesta);
-                    clientHandler.bufferedWriter.newLine();
-                    clientHandler.bufferedWriter.flush();
+                if(controladorCliente.clientUsername.equals(clientUsername)){
+                    controladorCliente.bufferedWriter.write(respuesta);
+                    controladorCliente.bufferedWriter.newLine();
+                    controladorCliente.bufferedWriter.flush();
                 }
             } catch (IOException e){
-                closeEverything(socket, bufferedReader, bufferedWriter);
+                cerrarTodo(socket, bufferedReader, bufferedWriter);
             }
         }
     }
     
-    public void broadcastMessage(String messageToSend){
-        for (ControladorClientes clientHandler: clientHandlers) {
+    public void retransmitirMensaje(String mensajeAEnviar){
+        for (ControladorClientes controladorCliente: controladorClientes) {
             try{
-                if(!clientHandler.clientUsername.equals(clientUsername)){
-                    clientHandler.bufferedWriter.write(messageToSend);
-                    clientHandler.bufferedWriter.newLine();
-                    clientHandler.bufferedWriter.flush();
+                if(!controladorCliente.clientUsername.equals(clientUsername)){
+                    controladorCliente.bufferedWriter.write(mensajeAEnviar);
+                    controladorCliente.bufferedWriter.newLine();
+                    controladorCliente.bufferedWriter.flush();
                 }
             } catch (IOException e){
-                closeEverything(socket, bufferedReader, bufferedWriter);
+                cerrarTodo(socket, bufferedReader, bufferedWriter);
             }
         }
     }
     
-    public void removeClientHandler(){
-        clientHandlers.remove(this);
-        broadcastMessage("Server: "+clientUsername+" has left the chat");
+    public void eliminarControladorCliente(){
+        controladorClientes.remove(this);
+        retransmitirMensaje("Server: "+clientUsername+" has left the chat");
     }
     
-    public void closeEverything(Socket socket, BufferedReader bufferedReader, BufferedWriter bufferedWriter){
-        removeClientHandler();
+    public void cerrarTodo(Socket socket, BufferedReader bufferedReader, BufferedWriter bufferedWriter){
+        eliminarControladorCliente();
         try{
             if(bufferedReader != null){
                 bufferedReader.close();

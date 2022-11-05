@@ -19,6 +19,19 @@ import java.net.Socket;
  * @author Admin
  */
 public class Broker {
+    private static Broker broker;
+    
+    private Broker(){
+        
+    }
+    
+    public static Broker obtenerInstancia(){
+        if(broker==null){
+            broker= new Broker();
+        }
+        return broker;
+    }
+    
     public String enviarSolicitud(String solicitud){
         String respuesta= "";
         try{

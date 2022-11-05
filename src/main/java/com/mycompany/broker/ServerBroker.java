@@ -21,7 +21,7 @@ public class ServerBroker {
         this.serverSocket = serverSocket;
     }
     
-    public void startServer(){
+    public void inciarServidor(){
         try{
             while(!serverSocket.isClosed()){
                 Socket socket= serverSocket.accept();
@@ -34,11 +34,11 @@ public class ServerBroker {
                 
             }
         }catch (IOException e){
-            this.closeServerSocket();
+            this.cerrarServerSocket();
         }
     }
     
-    public void closeServerSocket(){
+    public void cerrarServerSocket(){
         try{
             if(serverSocket!=null){
                 serverSocket.close();
@@ -51,6 +51,6 @@ public class ServerBroker {
     public static void main(String[] args) throws IOException{
         ServerSocket serverSocket= new ServerSocket(5000);
         ServerBroker serverBroker=new ServerBroker(serverSocket);
-        serverBroker.startServer();
+        serverBroker.inciarServidor();
     }
 }
