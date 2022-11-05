@@ -13,6 +13,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStreamWriter;
 import java.net.Socket;
+import java.util.ArrayList;
 
 /**
  *
@@ -20,7 +21,7 @@ import java.net.Socket;
  */
 public class Broker {
     private static Broker broker;
-    
+    private ArrayList<ControladorClientes> clientesConectados= new ArrayList<>();
     private Broker(){
         
     }
@@ -30,6 +31,18 @@ public class Broker {
             broker= new Broker();
         }
         return broker;
+    }
+    
+    public void agregarNuevoCliente(ControladorClientes cliente){
+        this.clientesConectados.add(cliente);
+    }
+    
+    public void eliminarCliente(ControladorClientes cliente){
+        this.clientesConectados.remove(cliente);
+    }
+    
+    public ArrayList<ControladorClientes> obtenerListaClientes(){
+        return this.clientesConectados;
     }
     
     public String enviarSolicitud(String solicitud){

@@ -22,7 +22,6 @@ import java.util.logging.Logger;
  * @author Admin
  */
 public class ControladorClientes implements Runnable{
-    public static ArrayList<ControladorClientes> controladorClientes= new ArrayList<>();
     private Socket socket;
     private BufferedReader bufferedReader;
     private BufferedWriter bufferedWriter;
@@ -40,8 +39,8 @@ public class ControladorClientes implements Runnable{
             this.inputStream= new ObjectInputStream(socket.getInputStream());
             this.clientUsername= bufferedReader.readLine();
             System.out.println(clientUsername+ "se ha conectado");
-            controladorClientes.add(this);
             this.broker= Broker.obtenerInstancia();
+            broker.agregarNuevoCliente(this);
         } catch (IOException e){
             cerrarTodo(socket, bufferedReader, bufferedWriter);
         }
@@ -69,7 +68,7 @@ public class ControladorClientes implements Runnable{
     }
     
     public void enviarRespuesta(String respuesta){
-        for (ControladorClientes controladorCliente: controladorClientes) {
+        for (ControladorClientes controladorCliente: broker.obtenerListaClientes()) {
             try{
                 if(controladorCliente.clientUsername.equals(clientUsername)){
                     controladorCliente.bufferedWriter.write(respuesta);
@@ -83,7 +82,7 @@ public class ControladorClientes implements Runnable{
     }
     
     public void retransmitirMensaje(String mensajeAEnviar){
-        for (ControladorClientes controladorCliente: controladorClientes) {
+        for (ControladorClientes controladorCliente: broker.obtenerListaClientes()) {
             try{
                 if(!controladorCliente.clientUsername.equals(clientUsername)){
                     controladorCliente.bufferedWriter.write(mensajeAEnviar);
@@ -97,7 +96,7 @@ public class ControladorClientes implements Runnable{
     }
     
     public void eliminarControladorCliente(){
-        controladorClientes.remove(this);
+        broker.eliminarCliente(this);
         retransmitirMensaje("Servidor: "+clientUsername+" ha cerrado la aplicación");
     }
     
