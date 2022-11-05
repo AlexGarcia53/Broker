@@ -98,7 +98,7 @@ public class ControladorClientes implements Runnable{
     
     public void eliminarControladorCliente(){
         controladorClientes.remove(this);
-        retransmitirMensaje("Server: "+clientUsername+" has left the chat");
+        retransmitirMensaje("Servidor: "+clientUsername+" ha cerrado la aplicación");
     }
     
     public void cerrarTodo(Socket socket, BufferedReader bufferedReader, BufferedWriter bufferedWriter){
