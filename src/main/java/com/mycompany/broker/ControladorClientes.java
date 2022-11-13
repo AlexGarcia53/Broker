@@ -70,7 +70,7 @@ public class ControladorClientes implements Runnable{
     public void enviarRespuesta(String respuesta){
         for (ControladorClientes controladorCliente: broker.obtenerListaClientes()) {
             try{
-                if(controladorCliente.clientUsername.equals(clientUsername)){
+                if(controladorCliente.equals(this)){
                     controladorCliente.bufferedWriter.write(respuesta);
                     controladorCliente.bufferedWriter.newLine();
                     controladorCliente.bufferedWriter.flush();
