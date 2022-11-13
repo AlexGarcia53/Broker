@@ -48,7 +48,7 @@ public class Broker {
     public String enviarSolicitud(String solicitud){
         String respuesta= "";
         try{
-            Socket socket= new Socket("192.168.0.4", 5001);
+            Socket socket= new Socket("192.168.100.5", 5001);
             BufferedReader bufferedReader= new BufferedReader(new InputStreamReader(socket.getInputStream()));
             BufferedWriter bufferedWriter= new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
 
