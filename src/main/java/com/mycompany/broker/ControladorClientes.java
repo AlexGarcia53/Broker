@@ -5,6 +5,7 @@
 package com.mycompany.broker;
 
 import dominio.Solicitud;
+import interfaces.SuscriptorMuro;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -21,22 +22,18 @@ import java.util.logging.Logger;
  *
  * @author Admin
  */
-public class ControladorClientes implements Runnable{
+public class ControladorClientes implements Runnable, SuscriptorMuro{
     private Socket socket;
     private BufferedReader bufferedReader;
     private BufferedWriter bufferedWriter;
     private String clientUsername;
     private Broker broker;
-    private ObjectOutputStream outputStream;
-    private ObjectInputStream inputStream;
     
     public ControladorClientes(Socket socket){
         try{
             this.socket= socket;
             this.bufferedWriter= new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
             this.bufferedReader= new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            this.outputStream= new ObjectOutputStream(socket.getOutputStream());
-            this.inputStream= new ObjectInputStream(socket.getInputStream());
             this.clientUsername= bufferedReader.readLine();
             System.out.println(clientUsername+ "se ha conectado");
             this.broker= Broker.obtenerInstancia();
@@ -56,9 +53,16 @@ public class ControladorClientes implements Runnable{
                 mensajeCliente= bufferedReader.readLine();
                 if(mensajeCliente!=null){
                     System.out.println(mensajeCliente);
-                    respuesta= broker.enviarSolicitud(mensajeCliente);
-                    System.out.println(respuesta);
-                    enviarRespuesta(respuesta);
+                    respuesta= broker.canalizarSolicitud(mensajeCliente);
+                    if(respuesta.equalsIgnoreCase("Suscripción")){
+                        String respuestaSuscripcion= broker.suscribirClienteMuro(this, mensajeCliente);
+                        enviarRespuesta(respuestaSuscripcion);
+                    }else if(respuesta.equalsIgnoreCase("Desuscripción")){
+                        String respuestaDesuscripcion= broker.desuscribirClienteMuro(this, mensajeCliente);
+                        enviarRespuesta(respuestaDesuscripcion);
+                    }else{
+                        enviarRespuesta(respuesta);
+                    }
                 }
             }catch(IOException e){
                 cerrarTodo(socket, bufferedReader, bufferedWriter);
@@ -114,6 +118,17 @@ public class ControladorClientes implements Runnable{
             }
         } catch (IOException e){
             e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void actualizar(String actualizacion) {
+        try{
+            bufferedWriter.write(actualizacion);
+            bufferedWriter.newLine();
+            bufferedWriter.flush();
+        } catch(IOException e){
+            cerrarTodo(socket, bufferedReader, bufferedWriter);
         }
     }
 }
