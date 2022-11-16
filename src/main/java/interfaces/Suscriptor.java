@@ -10,6 +10,6 @@ import dominio.Solicitud;
  *
  * @author Admin
  */
-public interface SuscriptorMuro {
+public interface Suscriptor {
     public void actualizar(String actualizacion);
 }

@@ -13,6 +13,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import dominio.Operacion;
 import dominio.Publicacion;
 import dominio.Usuario;
+import interfaces.Suscriptor;
 import java.io.OutputStreamWriter;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -25,8 +26,8 @@ public class Broker {
     private String HOST= "192.168.0.4";
     private int PUERTO= 5001;
     private static Broker broker;
-    private ArrayList<ControladorClientes> clientesConectados= new ArrayList<>();
-    private ArrayList<ControladorClientes> suscriptoresMuro= new ArrayList<>();
+//    private ArrayList<ControladorClientes> clientesConectados= new ArrayList<>();
+    private ArrayList<Suscriptor> suscriptores= new ArrayList<>();
     
     private Broker(){
         
@@ -39,37 +40,37 @@ public class Broker {
         return broker;
     }
     
-    public void agregarNuevoCliente(ControladorClientes cliente){
-        this.clientesConectados.add(cliente);
+//    public void agregarNuevoCliente(ControladorClientes cliente){
+//        this.clientesConectados.add(cliente);
+//    }
+//    
+//    public void eliminarCliente(ControladorClientes cliente){
+//        this.clientesConectados.remove(cliente);
+//    }
+//    
+//    public ArrayList<ControladorClientes> obtenerListaClientes(){
+//        return this.clientesConectados;
+//    }
+    
+    public void suscribirCliente(Suscriptor suscriptor){
+        this.suscriptores.add(suscriptor);
+//        System.out.println("Se suscribió un cliente");
+//        Solicitud solicitudDeserealizada= this.deserializarSolicitud(solicitud);
+//        solicitudDeserealizada.setRespuesta("Éxito");
+//        String solicitudSerializada= this.serializarSolicitud(solicitudDeserealizada);
+//        return solicitudSerializada;
     }
     
-    public void eliminarCliente(ControladorClientes cliente){
-        this.clientesConectados.remove(cliente);
-    }
-    
-    public ArrayList<ControladorClientes> obtenerListaClientes(){
-        return this.clientesConectados;
-    }
-    
-    public String suscribirClienteMuro(ControladorClientes suscriptor, String solicitud){
-        this.suscriptoresMuro.add(suscriptor);
-        System.out.println("Se suscribió un cliente");
-        Solicitud solicitudDeserealizada= this.deserializarSolicitud(solicitud);
-        solicitudDeserealizada.setRespuesta("Éxito");
-        String solicitudSerializada= this.serializarSolicitud(solicitudDeserealizada);
-        return solicitudSerializada;
-    }
-    
-    public String desuscribirClienteMuro(ControladorClientes suscriptor, String solicitud){
-        this.suscriptoresMuro.remove(suscriptor);
-        Solicitud solicitudDeserealizada= this.deserializarSolicitud(solicitud);
-        solicitudDeserealizada.setRespuesta("Éxito");
-        String solicitudSerializada= this.serializarSolicitud(solicitudDeserealizada);
-        return solicitudSerializada;
+    public void desuscribirCliente(Suscriptor suscriptor){
+        this.suscriptores.remove(suscriptor);
+//        Solicitud solicitudDeserealizada= this.deserializarSolicitud(solicitud);
+//        solicitudDeserealizada.setRespuesta("Éxito");
+//        String solicitudSerializada= this.serializarSolicitud(solicitudDeserealizada);
+//        return solicitudSerializada;
     }
     
     public void notificarSuscriptores(String actualizacion){
-        for(ControladorClientes suscriptor: suscriptoresMuro){
+        for(Suscriptor suscriptor: suscriptores){
             suscriptor.actualizar(actualizacion);
         }
     }
@@ -84,10 +85,10 @@ public class Broker {
                 return this.enviarSolicitudIniciarSesion(solicitud);
             case registrar_publicacion:
                 return this.enviarSolicitudRegistrarPublicacion(solicitud);
-            case suscribir_observador_muro:
-                return "Suscripción";
-            case desuscribir_observador_muro:
-                return "Desuscripción";
+//            case suscribir_observador_muro:
+//                return "Suscripción";
+//            case desuscribir_observador_muro:
+//                return "Desuscripción";
             default:
                 return null;
         }
@@ -95,10 +96,13 @@ public class Broker {
     
     public String enviarSolicitudRegistrarUsuario(String solicitud){
         String respuesta= "";
+        Socket socket;
+        BufferedReader bufferedReader;
+        BufferedWriter bufferedWriter;
         try{
-            Socket socket= new Socket(HOST, PUERTO);
-            BufferedReader bufferedReader= new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            BufferedWriter bufferedWriter= new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
+            socket= new Socket(HOST, PUERTO);
+            bufferedReader= new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            bufferedWriter= new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
 
             System.out.println(solicitud);
             bufferedWriter.write(solicitud);
@@ -107,8 +111,14 @@ public class Broker {
 
            
             respuesta= bufferedReader.readLine();
-            
+            socket.close();
+            bufferedReader.close();
+            bufferedWriter.close();
             Solicitud respuestaServidor= deserializarSolicitud(respuesta);
+            Usuario usuario= deserealizarUsuario(respuestaServidor.getRespuesta());
+            if(usuario!=null){
+                this.notificarSuscriptores(respuesta);
+            }
             
         } catch(IOException e){
             e.printStackTrace();
@@ -119,10 +129,13 @@ public class Broker {
     
     public String enviarSolicitudIniciarSesion(String solicitud){
         String respuesta= "";
+        Socket socket;
+        BufferedReader bufferedReader;
+        BufferedWriter bufferedWriter;
         try{
-            Socket socket= new Socket(HOST, PUERTO);
-            BufferedReader bufferedReader= new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            BufferedWriter bufferedWriter= new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
+            socket= new Socket(HOST, PUERTO);
+            bufferedReader= new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            bufferedWriter= new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
 
             System.out.println(solicitud);
             bufferedWriter.write(solicitud);
@@ -131,6 +144,15 @@ public class Broker {
 
            
             respuesta= bufferedReader.readLine();
+//            socket.close();
+//            bufferedReader.close();
+//            bufferedWriter.close();
+//            Solicitud respuestaServidor= deserializarSolicitud(respuesta);
+//            System.out.println(respuestaServidor.getRespuesta());
+//            Usuario usuario= deserealizarUsuario(respuestaServidor.getRespuesta());
+//            if(usuario!=null){
+//                this.notificarSuscriptores(respuesta);
+//            }
             
         } catch(IOException e){
             e.printStackTrace();
@@ -141,10 +163,13 @@ public class Broker {
     
     public String enviarSolicitudRegistrarPublicacion(String solicitud){
         String respuesta= "";
+        Socket socket;
+        BufferedReader bufferedReader;
+        BufferedWriter bufferedWriter;
         try{
-            Socket socket= new Socket(HOST, PUERTO);
-            BufferedReader bufferedReader= new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            BufferedWriter bufferedWriter= new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
+            socket= new Socket(HOST, PUERTO);
+            bufferedReader= new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            bufferedWriter= new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
 
             System.out.println(solicitud);
             bufferedWriter.write(solicitud);
@@ -153,9 +178,12 @@ public class Broker {
 
            
             respuesta= bufferedReader.readLine();
+            socket.close();
+            bufferedReader.close();
+            bufferedWriter.close();
             Solicitud respuestaServidor= this.deserializarSolicitud(respuesta);
             if(respuestaServidor.getRespuesta().equalsIgnoreCase("Se llevó a cabo el registro")){
-                this.notificarSuscriptores(respuestaServidor.getRespuesta());
+                this.notificarSuscriptores(respuesta);
             }
             
         } catch(IOException e){
@@ -190,6 +218,16 @@ public class Broker {
         try{
             ObjectMapper conversion= new ObjectMapper();
             return conversion.readValue(publicacion, Publicacion.class);
+        } catch(Exception e){
+            System.out.println(e.getMessage());
+        }
+        return null;
+    }
+    
+    public Usuario deserealizarUsuario(String usuario){
+        try{
+            ObjectMapper conversion= new ObjectMapper();
+            return conversion.readValue(usuario, Usuario.class);
         } catch(Exception e){
             System.out.println(e.getMessage());
         }

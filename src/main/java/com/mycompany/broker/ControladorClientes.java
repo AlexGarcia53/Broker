@@ -5,7 +5,7 @@
 package com.mycompany.broker;
 
 import dominio.Solicitud;
-import interfaces.SuscriptorMuro;
+import interfaces.Suscriptor;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -22,11 +22,11 @@ import java.util.logging.Logger;
  *
  * @author Admin
  */
-public class ControladorClientes implements Runnable, SuscriptorMuro{
+public class ControladorClientes implements Runnable, Suscriptor{
     private Socket socket;
     private BufferedReader bufferedReader;
     private BufferedWriter bufferedWriter;
-    private String clientUsername;
+//    private String clientUsername;
     private Broker broker;
     
     public ControladorClientes(Socket socket){
@@ -34,12 +34,13 @@ public class ControladorClientes implements Runnable, SuscriptorMuro{
             this.socket= socket;
             this.bufferedWriter= new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
             this.bufferedReader= new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            this.clientUsername= bufferedReader.readLine();
-            System.out.println(clientUsername+ "se ha conectado");
+//            this.clientUsername= bufferedReader.readLine();
+//            System.out.println("se ha conectado un cliente");
             this.broker= Broker.obtenerInstancia();
-            broker.agregarNuevoCliente(this);
+//            broker.agregarNuevoCliente(this);
+            broker.suscribirCliente(this);
         } catch (IOException e){
-            cerrarTodo(socket, bufferedReader, bufferedWriter);
+            cerrarTodo(this.socket, bufferedReader, bufferedWriter);
         }
         
     }
@@ -54,15 +55,16 @@ public class ControladorClientes implements Runnable, SuscriptorMuro{
                 if(mensajeCliente!=null){
                     System.out.println(mensajeCliente);
                     respuesta= broker.canalizarSolicitud(mensajeCliente);
-                    if(respuesta.equalsIgnoreCase("Suscripción")){
-                        String respuestaSuscripcion= broker.suscribirClienteMuro(this, mensajeCliente);
-                        enviarRespuesta(respuestaSuscripcion);
-                    }else if(respuesta.equalsIgnoreCase("Desuscripción")){
-                        String respuestaDesuscripcion= broker.desuscribirClienteMuro(this, mensajeCliente);
-                        enviarRespuesta(respuestaDesuscripcion);
-                    }else{
-                        enviarRespuesta(respuesta);
-                    }
+//                    if(respuesta.equalsIgnoreCase("Suscripción")){
+//                        String respuestaSuscripcion= broker.suscribirClienteMuro(this, mensajeCliente);
+//                        enviarRespuesta(respuestaSuscripcion);
+//                    }else if(respuesta.equalsIgnoreCase("Desuscripción")){
+//                        String respuestaDesuscripcion= broker.desuscribirClienteMuro(this, mensajeCliente);
+//                        enviarRespuesta(respuestaDesuscripcion);
+//                    }else{
+                        System.out.println(respuesta);
+                        enviarRespuesta(this, respuesta);
+//                    }
                 }
             }catch(IOException e){
                 cerrarTodo(socket, bufferedReader, bufferedWriter);
@@ -71,37 +73,38 @@ public class ControladorClientes implements Runnable, SuscriptorMuro{
         }
     }
     
-    public void enviarRespuesta(String respuesta){
-        for (ControladorClientes controladorCliente: broker.obtenerListaClientes()) {
+    public void enviarRespuesta(ControladorClientes controladorCliente, String respuesta){
+//        for (ControladorClientes controladorCliente: broker.obtenerListaClientes()) {
             try{
-                if(controladorCliente.equals(this)){
+//                if(controladorCliente.equals(this
+                    System.out.println("Entro a enviar respuesta");
                     controladorCliente.bufferedWriter.write(respuesta);
                     controladorCliente.bufferedWriter.newLine();
                     controladorCliente.bufferedWriter.flush();
-                }
+//                }
             } catch (IOException e){
                 cerrarTodo(socket, bufferedReader, bufferedWriter);
             }
-        }
+//        }
     }
     
-    public void retransmitirMensaje(String mensajeAEnviar){
-        for (ControladorClientes controladorCliente: broker.obtenerListaClientes()) {
-            try{
-                if(!controladorCliente.clientUsername.equals(clientUsername)){
-                    controladorCliente.bufferedWriter.write(mensajeAEnviar);
-                    controladorCliente.bufferedWriter.newLine();
-                    controladorCliente.bufferedWriter.flush();
-                }
-            } catch (IOException e){
-                cerrarTodo(socket, bufferedReader, bufferedWriter);
-            }
-        }
-    }
+//    public void retransmitirMensaje(String mensajeAEnviar){
+//        for (ControladorClientes controladorCliente: broker.obtenerListaClientes()) {
+//            try{
+//                if(!controladorCliente.clientUsername.equals(clientUsername)){
+//                    controladorCliente.bufferedWriter.write(mensajeAEnviar);
+//                    controladorCliente.bufferedWriter.newLine();
+//                    controladorCliente.bufferedWriter.flush();
+//                }
+//            } catch (IOException e){
+//                cerrarTodo(socket, bufferedReader, bufferedWriter);
+//            }
+//        }
+//    }
     
     public void eliminarControladorCliente(){
-        broker.eliminarCliente(this);
-        retransmitirMensaje("Servidor: "+clientUsername+" ha cerrado la aplicación");
+        broker.desuscribirCliente(this);
+//        retransmitirMensaje("Servidor: "+clientUsername+" ha cerrado la aplicación");
     }
     
     public void cerrarTodo(Socket socket, BufferedReader bufferedReader, BufferedWriter bufferedWriter){

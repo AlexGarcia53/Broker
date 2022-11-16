@@ -1,5 +1,5 @@
-interfaces\SuscriptorMuro.class
 com\mycompany\broker\Broker.class
 com\mycompany\broker\ControladorClientes.class
+interfaces\Suscriptor.class
 com\mycompany\broker\Broker$1.class
 com\mycompany\broker\ServerBroker.class
