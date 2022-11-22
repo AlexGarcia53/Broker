@@ -55,16 +55,13 @@ public class ControladorClientes implements Runnable, Suscriptor{
                 if(mensajeCliente!=null){
                     System.out.println(mensajeCliente);
                     respuesta= broker.canalizarSolicitud(mensajeCliente);
-//                    if(respuesta.equalsIgnoreCase("Suscripción")){
-//                        String respuestaSuscripcion= broker.suscribirClienteMuro(this, mensajeCliente);
-//                        enviarRespuesta(respuestaSuscripcion);
-//                    }else if(respuesta.equalsIgnoreCase("Desuscripción")){
-//                        String respuestaDesuscripcion= broker.desuscribirClienteMuro(this, mensajeCliente);
-//                        enviarRespuesta(respuestaDesuscripcion);
-//                    }else{
+                    if(respuesta.equalsIgnoreCase("Suscripción")){
+                        String respuestaSuscripcion= broker.agregarDetectorNotificaciones(this, mensajeCliente);
+                        enviarRespuesta(this, respuestaSuscripcion);
+                    }else{
                         System.out.println(respuesta);
                         enviarRespuesta(this, respuesta);
-//                    }
+                    }
                 }
             }catch(IOException e){
                 cerrarTodo(socket, bufferedReader, bufferedWriter);

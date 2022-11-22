@@ -28,6 +28,7 @@ public class Broker {
     private static Broker broker;
 //    private ArrayList<ControladorClientes> clientesConectados= new ArrayList<>();
     private ArrayList<Suscriptor> suscriptores= new ArrayList<>();
+    private Suscriptor detectorNotificaciones;
     
     private Broker(){
         
@@ -40,9 +41,14 @@ public class Broker {
         return broker;
     }
     
-//    public void agregarNuevoCliente(ControladorClientes cliente){
-//        this.clientesConectados.add(cliente);
-//    }
+    public String agregarDetectorNotificaciones(Suscriptor cliente, String solicitud){
+        this.detectorNotificaciones= cliente;
+        System.out.println("Se suscribió un detector de notificaciones");
+        Solicitud solicitudDeserealizada= Deserealizador.getInstancia().deserializarSolicitud(solicitud);
+        solicitudDeserealizada.setRespuesta("Éxito");
+        String solicitudSerializada= Deserealizador.getInstancia().serializarSolicitud(solicitudDeserealizada);
+        return solicitudSerializada;
+    }
 //    
 //    public void eliminarCliente(ControladorClientes cliente){
 //        this.clientesConectados.remove(cliente);
@@ -69,14 +75,12 @@ public class Broker {
 //        return solicitudSerializada;
     }
     
-    public void notificarSuscriptores(String actualizacion){
-        for(Suscriptor suscriptor: suscriptores){
-            suscriptor.actualizar(actualizacion);
-        }
+    public void notificar(String actualizacion){
+        this.detectorNotificaciones.actualizar(actualizacion);
     }
     
     public String canalizarSolicitud(String solicitud){
-        Solicitud objetoSolicitud = this.deserializarSolicitud(solicitud);
+        Solicitud objetoSolicitud = Deserealizador.getInstancia().deserializarSolicitud(solicitud);
         Operacion tipoOperacion= objetoSolicitud.getOperacion();
         switch (tipoOperacion) {
             case registrar_usuario:
@@ -85,8 +89,8 @@ public class Broker {
                 return this.enviarSolicitudIniciarSesion(solicitud);
             case registrar_publicacion:
                 return this.enviarSolicitudRegistrarPublicacion(solicitud);
-//            case suscribir_observador_muro:
-//                return "Suscripción";
+            case registrar_detector_notificaciones:
+                return "Suscripción";
 //            case desuscribir_observador_muro:
 //                return "Desuscripción";
             default:
@@ -111,13 +115,13 @@ public class Broker {
 
            
             respuesta= bufferedReader.readLine();
-            socket.close();
-            bufferedReader.close();
-            bufferedWriter.close();
-            Solicitud respuestaServidor= deserializarSolicitud(respuesta);
-            Usuario usuario= deserealizarUsuario(respuestaServidor.getRespuesta());
+//            socket.close();
+//            bufferedReader.close();
+//            bufferedWriter.close();
+            Solicitud respuestaServidor= Deserealizador.getInstancia().deserializarSolicitud(respuesta);
+            Usuario usuario= Deserealizador.getInstancia().deserealizarUsuario(respuestaServidor.getRespuesta());
             if(usuario!=null){
-                this.notificarSuscriptores(respuesta);
+                this.notificar(respuesta);
             }
             
         } catch(IOException e){
@@ -147,12 +151,12 @@ public class Broker {
 //            socket.close();
 //            bufferedReader.close();
 //            bufferedWriter.close();
-//            Solicitud respuestaServidor= deserializarSolicitud(respuesta);
-//            System.out.println(respuestaServidor.getRespuesta());
-//            Usuario usuario= deserealizarUsuario(respuestaServidor.getRespuesta());
-//            if(usuario!=null){
-//                this.notificarSuscriptores(respuesta);
-//            }
+            Solicitud respuestaServidor= Deserealizador.getInstancia().deserializarSolicitud(respuesta);
+            System.out.println(respuestaServidor.getRespuesta());
+            Usuario usuario= Deserealizador.getInstancia().deserealizarUsuario(respuestaServidor.getRespuesta());
+            if(usuario!=null){
+                this.notificar(respuesta);
+            }
             
         } catch(IOException e){
             e.printStackTrace();
@@ -178,12 +182,12 @@ public class Broker {
 
            
             respuesta= bufferedReader.readLine();
-            socket.close();
-            bufferedReader.close();
-            bufferedWriter.close();
-            Solicitud respuestaServidor= this.deserializarSolicitud(respuesta);
+//            socket.close();
+//            bufferedReader.close();
+//            bufferedWriter.close();
+            Solicitud respuestaServidor= Deserealizador.getInstancia().deserializarSolicitud(respuesta);
             if(respuestaServidor.getRespuesta().equalsIgnoreCase("Se llevó a cabo el registro")){
-                this.notificarSuscriptores(respuesta);
+                this.notificar(respuesta);
             }
             
         } catch(IOException e){
@@ -193,44 +197,44 @@ public class Broker {
         }
     }
     
-    private String serializarSolicitud(Solicitud solicitud){
-        try{
-            ObjectMapper mapper=new ObjectMapper();
-            String solicitudSerializada= mapper.writeValueAsString(solicitud);
-            return solicitudSerializada;
-        } catch(Exception e){
-            e.printStackTrace();
-        }
-        return null;
-    }
-    
-    private Solicitud deserializarSolicitud(String solicitud){
-        try{
-            ObjectMapper conversion= new ObjectMapper();
-            return conversion.readValue(solicitud, Solicitud.class);
-        } catch(Exception e){
-            System.out.println(e.getMessage());
-        }
-        return null;
-    }
-    
-    private Publicacion deserealizarPublicacion(String publicacion){
-        try{
-            ObjectMapper conversion= new ObjectMapper();
-            return conversion.readValue(publicacion, Publicacion.class);
-        } catch(Exception e){
-            System.out.println(e.getMessage());
-        }
-        return null;
-    }
-    
-    public Usuario deserealizarUsuario(String usuario){
-        try{
-            ObjectMapper conversion= new ObjectMapper();
-            return conversion.readValue(usuario, Usuario.class);
-        } catch(Exception e){
-            System.out.println(e.getMessage());
-        }
-        return null;
-    }
+//    private String serializarSolicitud(Solicitud solicitud){
+//        try{
+//            ObjectMapper mapper=new ObjectMapper();
+//            String solicitudSerializada= mapper.writeValueAsString(solicitud);
+//            return solicitudSerializada;
+//        } catch(Exception e){
+//            e.printStackTrace();
+//        }
+//        return null;
+//    }
+//    
+//    private Solicitud deserializarSolicitud(String solicitud){
+//        try{
+//            ObjectMapper conversion= new ObjectMapper();
+//            return conversion.readValue(solicitud, Solicitud.class);
+//        } catch(Exception e){
+//            System.out.println(e.getMessage());
+//        }
+//        return null;
+//    }
+//    
+//    private Publicacion deserealizarPublicacion(String publicacion){
+//        try{
+//            ObjectMapper conversion= new ObjectMapper();
+//            return conversion.readValue(publicacion, Publicacion.class);
+//        } catch(Exception e){
+//            System.out.println(e.getMessage());
+//        }
+//        return null;
+//    }
+//    
+//    public Usuario deserealizarUsuario(String usuario){
+//        try{
+//            ObjectMapper conversion= new ObjectMapper();
+//            return conversion.readValue(usuario, Usuario.class);
+//        } catch(Exception e){
+//            System.out.println(e.getMessage());
+//        }
+//        return null;
+//    }
 }
