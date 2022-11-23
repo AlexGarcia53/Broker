@@ -23,7 +23,7 @@ import java.util.ArrayList;
  * @author Admin
  */
 public class Broker {
-    private String HOST= "192.168.0.4";
+    private String HOST= "192.168.100.5";
     private int PUERTO= 5001;
     private static Broker broker;
 //    private ArrayList<ControladorClientes> clientesConectados= new ArrayList<>();
@@ -87,6 +87,8 @@ public class Broker {
                 return this.enviarSolicitudRegistrarUsuario(solicitud);
             case iniciar_sesion:
                 return this.enviarSolicitudIniciarSesion(solicitud);
+            case iniciar_sesion_facebook:
+                return this.enviarSolicitudIniciarSesionFacebook(solicitud);
             case registrar_publicacion:
                 return this.enviarSolicitudRegistrarPublicacion(solicitud);
             case registrar_detector_notificaciones:
@@ -165,6 +167,40 @@ public class Broker {
         }
     }
     
+    public String enviarSolicitudIniciarSesionFacebook(String solicitud){
+        String respuesta= "";
+        Socket socket;
+        BufferedReader bufferedReader;
+        BufferedWriter bufferedWriter;
+        try{
+            socket= new Socket(HOST, PUERTO);
+            bufferedReader= new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            bufferedWriter= new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
+
+            System.out.println(solicitud);
+            bufferedWriter.write(solicitud);
+            bufferedWriter.newLine();
+            bufferedWriter.flush();
+
+           
+            respuesta= bufferedReader.readLine();
+//            socket.close();
+//            bufferedReader.close();
+//            bufferedWriter.close();
+            Solicitud respuestaServidor= Deserealizador.getInstancia().deserializarSolicitud(respuesta);
+            System.out.println(respuestaServidor.getRespuesta());
+            Usuario usuario= Deserealizador.getInstancia().deserealizarUsuario(respuestaServidor.getRespuesta());
+            if(usuario!=null){
+                this.notificar(respuesta);
+            }
+            
+        } catch(IOException e){
+            e.printStackTrace();
+        } finally{
+            return respuesta;
+        }
+    }
+       
     public String enviarSolicitudRegistrarPublicacion(String solicitud){
         String respuesta= "";
         Socket socket;
