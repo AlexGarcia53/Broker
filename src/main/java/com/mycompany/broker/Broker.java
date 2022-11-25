@@ -13,22 +13,23 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import dominio.Operacion;
 import dominio.Publicacion;
 import dominio.Usuario;
-import interfaces.Suscriptor;
+import interfaces.Observador;
 import java.io.OutputStreamWriter;
 import java.net.Socket;
 import java.util.ArrayList;
+import observables.ObservableRegistrarPublicacion;
 
 /**
  *
  * @author Admin
  */
 public class Broker {
-    private String HOST= "192.168.100.5";
+    private String HOST= "192.168.0.4";
     private int PUERTO= 5001;
     private static Broker broker;
 //    private ArrayList<ControladorClientes> clientesConectados= new ArrayList<>();
-    private ArrayList<Suscriptor> suscriptores= new ArrayList<>();
-    private Suscriptor detectorNotificaciones;
+    private ArrayList<Observador> suscriptores= new ArrayList<>();
+//    private Suscriptor detectorNotificaciones;
     
     private Broker(){
         
@@ -41,14 +42,14 @@ public class Broker {
         return broker;
     }
     
-    public String agregarDetectorNotificaciones(Suscriptor cliente, String solicitud){
-        this.detectorNotificaciones= cliente;
-        System.out.println("Se suscribió un detector de notificaciones");
-        Solicitud solicitudDeserealizada= Deserealizador.getInstancia().deserializarSolicitud(solicitud);
-        solicitudDeserealizada.setRespuesta("Éxito");
-        String solicitudSerializada= Deserealizador.getInstancia().serializarSolicitud(solicitudDeserealizada);
-        return solicitudSerializada;
-    }
+//    public String agregarDetectorNotificaciones(Suscriptor cliente, String solicitud){
+//        this.detectorNotificaciones= cliente;
+//        System.out.println("Se suscribió un detector de notificaciones");
+//        Solicitud solicitudDeserealizada= Deserealizador.getInstancia().deserializarSolicitud(solicitud);
+//        solicitudDeserealizada.setRespuesta("Éxito");
+//        String solicitudSerializada= Deserealizador.getInstancia().serializarSolicitud(solicitudDeserealizada);
+//        return solicitudSerializada;
+//    }
 //    
 //    public void eliminarCliente(ControladorClientes cliente){
 //        this.clientesConectados.remove(cliente);
@@ -58,7 +59,7 @@ public class Broker {
 //        return this.clientesConectados;
 //    }
     
-    public void suscribirCliente(Suscriptor suscriptor){
+    public void suscribirCliente(Observador suscriptor){
         this.suscriptores.add(suscriptor);
 //        System.out.println("Se suscribió un cliente");
 //        Solicitud solicitudDeserealizada= this.deserializarSolicitud(solicitud);
@@ -67,7 +68,7 @@ public class Broker {
 //        return solicitudSerializada;
     }
     
-    public void desuscribirCliente(Suscriptor suscriptor){
+    public void desuscribirCliente(Observador suscriptor){
         this.suscriptores.remove(suscriptor);
 //        Solicitud solicitudDeserealizada= this.deserializarSolicitud(solicitud);
 //        solicitudDeserealizada.setRespuesta("Éxito");
@@ -75,9 +76,9 @@ public class Broker {
 //        return solicitudSerializada;
     }
     
-    public void notificar(String actualizacion){
-        this.detectorNotificaciones.actualizar(actualizacion);
-    }
+//    public void notificar(String actualizacion){
+//        this.detectorNotificaciones.actualizar(actualizacion);
+//    }
     
     public String canalizarSolicitud(String solicitud){
         Solicitud objetoSolicitud = Deserealizador.getInstancia().deserializarSolicitud(solicitud);
@@ -91,8 +92,10 @@ public class Broker {
                 return this.enviarSolicitudIniciarSesionFacebook(solicitud);
             case registrar_publicacion:
                 return this.enviarSolicitudRegistrarPublicacion(solicitud);
-            case registrar_detector_notificaciones:
-                return "Suscripción";
+            case suscribrir_observador_registrarPublicacion:
+                return "Suscripcion registrar publicación";
+            case desuscribrir_observador_registrarPublicacion:
+                return "Desuscripcion registrar publicación";
 //            case desuscribir_observador_muro:
 //                return "Desuscripción";
             default:
@@ -123,7 +126,7 @@ public class Broker {
             Solicitud respuestaServidor= Deserealizador.getInstancia().deserializarSolicitud(respuesta);
             Usuario usuario= Deserealizador.getInstancia().deserealizarUsuario(respuestaServidor.getRespuesta());
             if(usuario!=null){
-                this.notificar(respuesta);
+//                this.notificar(respuesta);
             }
             
         } catch(IOException e){
@@ -157,7 +160,7 @@ public class Broker {
             System.out.println(respuestaServidor.getRespuesta());
             Usuario usuario= Deserealizador.getInstancia().deserealizarUsuario(respuestaServidor.getRespuesta());
             if(usuario!=null){
-                this.notificar(respuesta);
+//                this.notificar(respuesta);
             }
             
         } catch(IOException e){
@@ -191,7 +194,7 @@ public class Broker {
             System.out.println(respuestaServidor.getRespuesta());
             Usuario usuario= Deserealizador.getInstancia().deserealizarUsuario(respuestaServidor.getRespuesta());
             if(usuario!=null){
-                this.notificar(respuesta);
+//                this.notificar(respuesta);
             }
             
         } catch(IOException e){
@@ -223,7 +226,7 @@ public class Broker {
 //            bufferedWriter.close();
             Solicitud respuestaServidor= Deserealizador.getInstancia().deserializarSolicitud(respuesta);
             if(respuestaServidor.getRespuesta().equalsIgnoreCase("Se llevó a cabo el registro")){
-                this.notificar(respuesta);
+                ObservableRegistrarPublicacion.getInstancia().notificar(respuestaServidor.getRespuesta());
             }
             
         } catch(IOException e){

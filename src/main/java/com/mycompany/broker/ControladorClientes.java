@@ -5,7 +5,7 @@
 package com.mycompany.broker;
 
 import dominio.Solicitud;
-import interfaces.Suscriptor;
+import interfaces.Observador;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -17,12 +17,13 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import observables.CanalizadorSuscripciones;
 
 /**
  *
  * @author Admin
  */
-public class ControladorClientes implements Runnable, Suscriptor{
+public class ControladorClientes implements Runnable, Observador{
     private Socket socket;
     private BufferedReader bufferedReader;
     private BufferedWriter bufferedWriter;
@@ -38,7 +39,7 @@ public class ControladorClientes implements Runnable, Suscriptor{
 //            System.out.println("se ha conectado un cliente");
             this.broker= Broker.obtenerInstancia();
 //            broker.agregarNuevoCliente(this);
-            broker.suscribirCliente(this);
+//            broker.suscribirCliente(this);
         } catch (IOException e){
             cerrarTodo(this.socket, bufferedReader, bufferedWriter);
         }
@@ -55,11 +56,10 @@ public class ControladorClientes implements Runnable, Suscriptor{
                 if(mensajeCliente!=null){
                     System.out.println(mensajeCliente);
                     respuesta= broker.canalizarSolicitud(mensajeCliente);
-                    if(respuesta.equalsIgnoreCase("Suscripción")){
-                        String respuestaSuscripcion= broker.agregarDetectorNotificaciones(this, mensajeCliente);
-                        enviarRespuesta(this, respuestaSuscripcion);
+                    if(respuesta.startsWith("Suscripcion") || respuesta.startsWith("Desuscripcion")){
+                        CanalizadorSuscripciones.getInstancia().canalizarSolicitud(mensajeCliente, this);
                     }else{
-                        System.out.println(respuesta);
+                        System.out.println("Entra al else"+respuesta);
                         enviarRespuesta(this, respuesta);
                     }
                 }
@@ -122,7 +122,7 @@ public class ControladorClientes implements Runnable, Suscriptor{
     }
 
     @Override
-    public void actualizar(String actualizacion) {
+    public void notificar(String actualizacion) {
         try{
             bufferedWriter.write(actualizacion);
             bufferedWriter.newLine();
