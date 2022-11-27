@@ -33,6 +33,7 @@ public class ObservableRegistrarPublicacion {
     
     public void desuscribirse(Observador suscriptor){
         this.suscriptores.remove(suscriptor);
+        System.out.println("Se elimino un suscriptor, "+suscriptores.size());
     }
     
     public void notificar(String actualizacion){

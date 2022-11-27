@@ -1,5 +1,7 @@
 C:\Users\Admin\Documents\GitHub\Broker\src\main\java\com\mycompany\broker\Broker.java
 C:\Users\Admin\Documents\GitHub\Broker\src\main\java\com\mycompany\broker\ControladorClientes.java
+C:\Users\Admin\Documents\GitHub\Broker\src\main\java\interfaces\Observador.java
 C:\Users\Admin\Documents\GitHub\Broker\src\main\java\com\mycompany\broker\Deserealizador.java
+C:\Users\Admin\Documents\GitHub\Broker\src\main\java\observables\CanalizadorSuscripciones.java
+C:\Users\Admin\Documents\GitHub\Broker\src\main\java\observables\ObservableRegistrarPublicacion.java
 C:\Users\Admin\Documents\GitHub\Broker\src\main\java\com\mycompany\broker\ServerBroker.java
-C:\Users\Admin\Documents\GitHub\Broker\src\main\java\interfaces\Suscriptor.java

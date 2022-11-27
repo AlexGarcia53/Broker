@@ -96,6 +96,8 @@ public class Broker {
                 return "Suscripcion registrar publicación";
             case desuscribrir_observador_registrarPublicacion:
                 return "Desuscripcion registrar publicación";
+            case consultar_publicaciones:
+                return this.enviarSolicitudConsultarPublicaciones(solicitud);
 //            case desuscribir_observador_muro:
 //                return "Desuscripción";
             default:
@@ -225,10 +227,35 @@ public class Broker {
 //            bufferedReader.close();
 //            bufferedWriter.close();
             Solicitud respuestaServidor= Deserealizador.getInstancia().deserializarSolicitud(respuesta);
-            if(respuestaServidor.getRespuesta().equalsIgnoreCase("Se llevó a cabo el registro")){
+            Publicacion publicacion= Deserealizador.getInstancia().deserealizarPublicacion(respuestaServidor.getRespuesta());
+            if(publicacion!=null){
                 ObservableRegistrarPublicacion.getInstancia().notificar(respuestaServidor.getRespuesta());
             }
             
+        } catch(IOException e){
+            e.printStackTrace();
+        } finally{
+            return respuesta;
+        }
+    }
+    
+    public String enviarSolicitudConsultarPublicaciones(String solicitud){
+        String respuesta= "";
+        Socket socket;
+        BufferedReader bufferedReader;
+        BufferedWriter bufferedWriter;
+        try{
+            socket= new Socket(HOST, PUERTO);
+            bufferedReader= new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            bufferedWriter= new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
+
+            System.out.println(solicitud);
+            bufferedWriter.write(solicitud);
+            bufferedWriter.newLine();
+            bufferedWriter.flush();
+
+           
+            respuesta= bufferedReader.readLine();    
         } catch(IOException e){
             e.printStackTrace();
         } finally{

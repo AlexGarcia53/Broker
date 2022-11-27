@@ -1,6 +1,9 @@
 com\mycompany\broker\Broker.class
+observables\CanalizadorSuscripciones$1.class
 com\mycompany\broker\ControladorClientes.class
-interfaces\Suscriptor.class
+com\mycompany\broker\ServerBroker.class
+observables\ObservableRegistrarPublicacion.class
+interfaces\Observador.class
+observables\CanalizadorSuscripciones.class
 com\mycompany\broker\Broker$1.class
 com\mycompany\broker\Deserealizador.class
-com\mycompany\broker\ServerBroker.class
