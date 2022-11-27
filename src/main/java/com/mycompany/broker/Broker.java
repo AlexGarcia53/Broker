@@ -10,6 +10,7 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import dominio.Mensaje;
 import dominio.Operacion;
 import dominio.Publicacion;
 import dominio.Usuario;
@@ -24,8 +25,10 @@ import observables.ObservableRegistrarPublicacion;
  * @author Admin
  */
 public class Broker {
-    private String HOST= "192.168.0.4";
+   // private String HOST= "192.168.0.4";
+    private String HOST= "192.168.0.9";
     private int PUERTO= 5001;
+   // private int PUERTO= 5000;
     private static Broker broker;
 //    private ArrayList<ControladorClientes> clientesConectados= new ArrayList<>();
     private ArrayList<Observador> suscriptores= new ArrayList<>();
@@ -92,12 +95,15 @@ public class Broker {
                 return this.enviarSolicitudIniciarSesionFacebook(solicitud);
             case registrar_publicacion:
                 return this.enviarSolicitudRegistrarPublicacion(solicitud);
+            case enviar_notificación:
+                return this.enviarSolicitudNotificar(solicitud);
             case suscribrir_observador_registrarPublicacion:
                 return "Suscripcion registrar publicación";
             case desuscribrir_observador_registrarPublicacion:
                 return "Desuscripcion registrar publicación";
 //            case desuscribir_observador_muro:
 //                return "Desuscripción";
+            
             default:
                 return null;
         }
@@ -227,6 +233,38 @@ public class Broker {
             Solicitud respuestaServidor= Deserealizador.getInstancia().deserializarSolicitud(respuesta);
             if(respuestaServidor.getRespuesta().equalsIgnoreCase("Se llevó a cabo el registro")){
                 ObservableRegistrarPublicacion.getInstancia().notificar(respuestaServidor.getRespuesta());
+            }
+            
+        } catch(IOException e){
+            e.printStackTrace();
+        } finally{
+            return respuesta;
+        }
+    }
+      public String enviarSolicitudNotificar(String solicitud){
+        String respuesta= "";
+        Socket socket;
+        BufferedReader bufferedReader;
+        BufferedWriter bufferedWriter;
+        try{
+            socket= new Socket(HOST, PUERTO);
+            bufferedReader= new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            bufferedWriter= new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
+
+            System.out.println(solicitud);
+            bufferedWriter.write(solicitud);
+            bufferedWriter.newLine();
+            bufferedWriter.flush();
+
+           
+            respuesta= bufferedReader.readLine();
+//            socket.close();
+//            bufferedReader.close();
+//            bufferedWriter.close();
+            Solicitud respuestaServidor= Deserealizador.getInstancia().deserializarSolicitud(respuesta);
+            Mensaje mensaje= Deserealizador.getInstancia().deserealizarMensaje(respuestaServidor.getRespuesta());
+            if(mensaje!=null){
+//                this.notificar(respuesta);
             }
             
         } catch(IOException e){
