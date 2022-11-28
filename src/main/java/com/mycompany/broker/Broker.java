@@ -10,6 +10,7 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import dominio.Comentario;
 import dominio.Operacion;
 import dominio.Publicacion;
 import dominio.Usuario;
@@ -17,6 +18,10 @@ import interfaces.Observador;
 import java.io.OutputStreamWriter;
 import java.net.Socket;
 import java.util.ArrayList;
+import observables.ObservableEditarComentario;
+import observables.ObservableEditarPublicacion;
+import observables.ObservableEliminarPublicacion;
+import observables.ObservableRegistrarComentario;
 import observables.ObservableRegistrarPublicacion;
 
 /**
@@ -27,9 +32,7 @@ public class Broker {
     private String HOST= "192.168.0.4";
     private int PUERTO= 5001;
     private static Broker broker;
-//    private ArrayList<ControladorClientes> clientesConectados= new ArrayList<>();
     private ArrayList<Observador> suscriptores= new ArrayList<>();
-//    private Suscriptor detectorNotificaciones;
     
     private Broker(){
         
@@ -42,43 +45,13 @@ public class Broker {
         return broker;
     }
     
-//    public String agregarDetectorNotificaciones(Suscriptor cliente, String solicitud){
-//        this.detectorNotificaciones= cliente;
-//        System.out.println("Se suscribió un detector de notificaciones");
-//        Solicitud solicitudDeserealizada= Deserealizador.getInstancia().deserializarSolicitud(solicitud);
-//        solicitudDeserealizada.setRespuesta("Éxito");
-//        String solicitudSerializada= Deserealizador.getInstancia().serializarSolicitud(solicitudDeserealizada);
-//        return solicitudSerializada;
-//    }
-//    
-//    public void eliminarCliente(ControladorClientes cliente){
-//        this.clientesConectados.remove(cliente);
-//    }
-//    
-//    public ArrayList<ControladorClientes> obtenerListaClientes(){
-//        return this.clientesConectados;
-//    }
-    
     public void suscribirCliente(Observador suscriptor){
         this.suscriptores.add(suscriptor);
-//        System.out.println("Se suscribió un cliente");
-//        Solicitud solicitudDeserealizada= this.deserializarSolicitud(solicitud);
-//        solicitudDeserealizada.setRespuesta("Éxito");
-//        String solicitudSerializada= this.serializarSolicitud(solicitudDeserealizada);
-//        return solicitudSerializada;
     }
     
     public void desuscribirCliente(Observador suscriptor){
         this.suscriptores.remove(suscriptor);
-//        Solicitud solicitudDeserealizada= this.deserializarSolicitud(solicitud);
-//        solicitudDeserealizada.setRespuesta("Éxito");
-//        String solicitudSerializada= this.serializarSolicitud(solicitudDeserealizada);
-//        return solicitudSerializada;
     }
-    
-//    public void notificar(String actualizacion){
-//        this.detectorNotificaciones.actualizar(actualizacion);
-//    }
     
     public String canalizarSolicitud(String solicitud){
         Solicitud objetoSolicitud = Deserealizador.getInstancia().deserializarSolicitud(solicitud);
@@ -98,8 +71,30 @@ public class Broker {
                 return "Desuscripcion registrar publicación";
             case consultar_publicaciones:
                 return this.enviarSolicitudConsultarPublicaciones(solicitud);
-//            case desuscribir_observador_muro:
-//                return "Desuscripción";
+            case suscribir_observador_editarPublicacion:
+                return "Suscripcion editar publicación";
+            case desuscribir_observador_editarPublicacion:
+                return "Desuscripcion editar publicación";
+            case editar_publicacion:
+                return this.enviarSolicitudEditarPublicacion(solicitud);
+            case suscribir_observador_eliminarPublicacion:
+                return "Suscripcion eliminar publicación";
+            case desuscribir_observador_eliminarPublicacion:
+                return "Desuscripcion eliminar publicación";
+            case eliminar_publicacion:
+                return this.enviarSolicitudEliminarPublicacion(solicitud);
+            case suscribir_observador_registrarComentario:
+                return "Suscripcion registar comentario";
+            case desuscribir_observador_registrarComentario:
+                return "Desuscripcion registrar comentario";
+            case registrar_comentario:
+                return this.enviarSolicitudRegistrarComentario(solicitud);
+            case suscribir_observador_editarComentario:
+                return "Suscripcion editar comentario";
+            case desuscribir_observador_editarComentario:
+                return "Desuscripcion editar comentario";
+            case editar_comentario:
+                return this.enviarSolicitudEditarComentario(solicitud);
             default:
                 return null;
         }
@@ -230,6 +225,138 @@ public class Broker {
             Publicacion publicacion= Deserealizador.getInstancia().deserealizarPublicacion(respuestaServidor.getRespuesta());
             if(publicacion!=null){
                 ObservableRegistrarPublicacion.getInstancia().notificar(respuestaServidor.getRespuesta());
+            }
+            
+        } catch(IOException e){
+            e.printStackTrace();
+        } finally{
+            return respuesta;
+        }
+    }
+    
+    public String enviarSolicitudEditarPublicacion(String solicitud){
+        String respuesta= "";
+        Socket socket;
+        BufferedReader bufferedReader;
+        BufferedWriter bufferedWriter;
+        try{
+            socket= new Socket(HOST, PUERTO);
+            bufferedReader= new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            bufferedWriter= new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
+
+            System.out.println(solicitud);
+            bufferedWriter.write(solicitud);
+            bufferedWriter.newLine();
+            bufferedWriter.flush();
+
+           
+            respuesta= bufferedReader.readLine();
+//            socket.close();
+//            bufferedReader.close();
+//            bufferedWriter.close();
+            Solicitud respuestaServidor= Deserealizador.getInstancia().deserializarSolicitud(respuesta);
+            Publicacion publicacion= Deserealizador.getInstancia().deserealizarPublicacion(respuestaServidor.getRespuesta());
+            if(publicacion!=null){
+                ObservableEditarPublicacion.getInstancia().notificar(respuestaServidor.getRespuesta());
+            }
+            
+        } catch(IOException e){
+            e.printStackTrace();
+        } finally{
+            return respuesta;
+        }
+    }
+    
+    public String enviarSolicitudEliminarPublicacion(String solicitud){
+        String respuesta= "";
+        Socket socket;
+        BufferedReader bufferedReader;
+        BufferedWriter bufferedWriter;
+        try{
+            socket= new Socket(HOST, PUERTO);
+            bufferedReader= new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            bufferedWriter= new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
+
+            System.out.println(solicitud);
+            bufferedWriter.write(solicitud);
+            bufferedWriter.newLine();
+            bufferedWriter.flush();
+
+           
+            respuesta= bufferedReader.readLine();
+//            socket.close();
+//            bufferedReader.close();
+//            bufferedWriter.close();
+            Solicitud respuestaServidor= Deserealizador.getInstancia().deserializarSolicitud(respuesta);
+            Publicacion publicacion= Deserealizador.getInstancia().deserealizarPublicacion(respuestaServidor.getRespuesta());
+            if(publicacion!=null){
+                ObservableEliminarPublicacion.getInstancia().notificar(respuestaServidor.getRespuesta());
+            }
+            
+        } catch(IOException e){
+            e.printStackTrace();
+        } finally{
+            return respuesta;
+        }
+    }
+    
+    public String enviarSolicitudRegistrarComentario(String solicitud){
+        String respuesta= "";
+        Socket socket;
+        BufferedReader bufferedReader;
+        BufferedWriter bufferedWriter;
+        try{
+            socket= new Socket(HOST, PUERTO);
+            bufferedReader= new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            bufferedWriter= new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
+
+            System.out.println(solicitud);
+            bufferedWriter.write(solicitud);
+            bufferedWriter.newLine();
+            bufferedWriter.flush();
+
+           
+            respuesta= bufferedReader.readLine();
+//            socket.close();
+//            bufferedReader.close();
+//            bufferedWriter.close();
+            Solicitud respuestaServidor= Deserealizador.getInstancia().deserializarSolicitud(respuesta);
+            Comentario comentario= Deserealizador.getInstancia().deserealizarComentario(respuestaServidor.getRespuesta());
+            if(comentario!=null){
+                ObservableRegistrarComentario.getInstancia().notificar(respuestaServidor.getRespuesta());
+            }
+            
+        } catch(IOException e){
+            e.printStackTrace();
+        } finally{
+            return respuesta;
+        }
+    }
+    
+    public String enviarSolicitudEditarComentario(String solicitud){
+        String respuesta= "";
+        Socket socket;
+        BufferedReader bufferedReader;
+        BufferedWriter bufferedWriter;
+        try{
+            socket= new Socket(HOST, PUERTO);
+            bufferedReader= new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            bufferedWriter= new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
+
+            System.out.println(solicitud);
+            bufferedWriter.write(solicitud);
+            bufferedWriter.newLine();
+            bufferedWriter.flush();
+
+           
+            respuesta= bufferedReader.readLine();
+//            socket.close();
+//            bufferedReader.close();
+//            bufferedWriter.close();
+            Solicitud respuestaServidor= Deserealizador.getInstancia().deserializarSolicitud(respuesta);
+            Comentario comentario= Deserealizador.getInstancia().deserealizarComentario(respuestaServidor.getRespuesta());
+            if(comentario!=null){
+                ObservableEditarComentario.getInstancia().notificar(respuestaServidor.getRespuesta());
             }
             
         } catch(IOException e){

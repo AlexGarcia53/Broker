@@ -5,6 +5,7 @@
 package com.mycompany.broker;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import dominio.Comentario;
 import dominio.Publicacion;
 import dominio.Solicitud;
 import dominio.Usuario;
@@ -62,6 +63,16 @@ public class Deserealizador {
         try{
             ObjectMapper conversion= new ObjectMapper();
             return conversion.readValue(usuario, Usuario.class);
+        } catch(Exception e){
+            System.out.println(e.getMessage());
+        }
+        return null;
+    }
+    
+    public Comentario deserealizarComentario(String comentario){
+        try{
+            ObjectMapper conversion= new ObjectMapper();
+            return conversion.readValue(comentario, Comentario.class);
         } catch(Exception e){
             System.out.println(e.getMessage());
         }

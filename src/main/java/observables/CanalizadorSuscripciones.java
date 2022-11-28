@@ -39,6 +39,37 @@ public class CanalizadorSuscripciones {
                 ObservableRegistrarPublicacion.getInstancia().desuscribirse(suscriptor);
                 break;
             }
+            case suscribir_observador_editarPublicacion:{
+                ObservableEditarPublicacion.getInstancia().suscribirse(suscriptor);
+                break;
+            }
+            case desuscribir_observador_editarPublicacion:{
+                ObservableEditarPublicacion.getInstancia().desuscribirse(suscriptor);
+                break;
+            }
+            case suscribir_observador_eliminarPublicacion:{
+                ObservableEliminarPublicacion.getInstancia().suscribirse(suscriptor);
+                break;
+            }
+            case desuscribir_observador_eliminarPublicacion:{
+                ObservableEliminarPublicacion.getInstancia().desuscribirse(suscriptor);
+                break;
+            }
+            case suscribir_observador_registrarComentario:{
+                ObservableRegistrarComentario.getInstancia().suscribirse(suscriptor);
+                break;
+            }
+            case desuscribir_observador_registrarComentario:{
+                ObservableRegistrarComentario.getInstancia().desuscribirse(suscriptor);
+                break;
+            }
+            case suscribir_observador_editarComentario:{
+                ObservableEditarComentario.getInstancia().suscribirse(suscriptor);
+                break;
+            }
+            case desuscribir_observador_editarComentario:{
+                ObservableEditarComentario.getInstancia().desuscribirse(suscriptor);
+            }
             default:{
                 break;
             }
