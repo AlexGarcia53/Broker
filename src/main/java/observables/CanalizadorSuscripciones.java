@@ -69,6 +69,14 @@ public class CanalizadorSuscripciones {
             }
             case desuscribir_observador_editarComentario:{
                 ObservableEditarComentario.getInstancia().desuscribirse(suscriptor);
+                break;
+            }
+            case suscribir_observador_eliminarComentario:{
+                ObservableEliminarComentario.getInstancia().suscribirse(suscriptor);
+                break;
+            }
+            case desuscribir_observador_eliminarComentario:{
+                ObservableEliminarComentario.getInstancia().desuscribirse(suscriptor);
             }
             default:{
                 break;

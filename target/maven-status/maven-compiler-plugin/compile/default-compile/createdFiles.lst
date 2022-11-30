@@ -1,9 +1,14 @@
-com\mycompany\broker\Broker.class
 observables\CanalizadorSuscripciones$1.class
+observables\ObservableEliminarPublicacion.class
 com\mycompany\broker\ControladorClientes.class
 com\mycompany\broker\ServerBroker.class
+observables\ObservableEditarComentario.class
 observables\ObservableRegistrarPublicacion.class
+observables\ObservableRegistrarComentario.class
+observables\ObservableEliminarComentario.class
 interfaces\Observador.class
-observables\CanalizadorSuscripciones.class
 com\mycompany\broker\Broker$1.class
 com\mycompany\broker\Deserealizador.class
+com\mycompany\broker\Broker.class
+observables\ObservableEditarPublicacion.class
+observables\CanalizadorSuscripciones.class
