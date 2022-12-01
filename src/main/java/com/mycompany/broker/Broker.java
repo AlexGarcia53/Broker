@@ -177,6 +177,14 @@ public class Broker {
                 break;
 //                return this.enviarSolicitudEditarUsuario(solicitud);
             }
+            case consultar_usuarioNombre:{
+                estrategia= new SolicitudConsultarUsuarioNombre();
+                break;
+            }
+            case registrar_mensaje:{
+                estrategia= new SolicitudEnviarMensaje();
+                break;
+            }
         }
         return estrategia.enviarSolicitud(solicitud);
     }
