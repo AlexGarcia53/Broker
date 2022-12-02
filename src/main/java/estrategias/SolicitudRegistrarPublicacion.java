@@ -17,17 +17,41 @@ import java.net.Socket;
 import observables.ObservableRegistrarPublicacion;
 
 /**
- *
- * @author Admin
+ * Clase encargada del envío de una solicitud del tipo registrar publicación.
+ * @author Equipo Broker.
  */
 public class SolicitudRegistrarPublicacion implements IEstrategia{
+    /**
+     * Atributo con la ip del HOST al que se conectará para enviar la solicitud.
+     */
     private String HOST= "127.0.0.1";
+    /** 
+     * Atributo con el puerto al que se conectará para enviar la solicitud.
+     */
     private int PUERTO= 5001; 
+    /**
+     * Atributo que contiene la respuesta a la solicitud.
+     */
     private String respuesta= "";
+    /**
+     * Atributo con el socket de la conexión.
+     */
     private Socket socket;
+    /** 
+     * Atributo con el buffered reader de la conexión.
+     */
     private BufferedReader bufferedReader;
+    /**
+     * Atributo con el buffered writer de la conexión.
+     */
     private BufferedWriter bufferedWriter;
-    
+    /**
+     * Método encargado de enviar la solicitud al servidor y devolver la respuesta que le dió este último, 
+     * también se encarga de notificar el registro de una publicación mediante el observable, esto en caso de que 
+     * se lleve a cabo la operación.
+     * @param solicitud String con la solicitud a enviar.
+     * @return Respuesta del servidor.
+     */
     @Override
     public String enviarSolicitud(String solicitud) {
         try{
@@ -42,9 +66,7 @@ public class SolicitudRegistrarPublicacion implements IEstrategia{
 
            
             respuesta= bufferedReader.readLine();
-//            socket.close();
-//            bufferedReader.close();
-//            bufferedWriter.close();
+
             Solicitud respuestaServidor= Deserealizador.getInstancia().deserializarSolicitud(respuesta);
             Publicacion publicacion= Deserealizador.getInstancia().deserealizarPublicacion(respuestaServidor.getRespuesta());
             if(publicacion!=null){

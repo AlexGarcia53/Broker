@@ -7,9 +7,14 @@ package interfaces;
 import dominio.Solicitud;
 
 /**
- *
- * @author Admin
+ * Interfaz que contiene el método necesario para que las clases que la implementen puedan 
+ * notificar.
+ * @author Equipo Broker.
  */
 public interface IObservador {
+    /**
+     * Método utilizado para notificar la actualización de un evento.
+     * @param actualizacion Actualización de un evento.
+     */
     public void notificar(String actualizacion);
 }

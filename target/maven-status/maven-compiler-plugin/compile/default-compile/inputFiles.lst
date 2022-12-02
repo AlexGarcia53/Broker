@@ -5,7 +5,6 @@ C:\Users\Admin\Documents\GitHub\Broker\src\main\java\observables\ObservableEdita
 C:\Users\Admin\Documents\GitHub\Broker\src\main\java\estrategias\SolicitudIniciarSesionFacebook.java
 C:\Users\Admin\Documents\GitHub\Broker\src\main\java\estrategias\SolicitudRegistrarPublicacion.java
 C:\Users\Admin\Documents\GitHub\Broker\src\main\java\com\mycompany\broker\ServerBroker.java
-C:\Users\Admin\Documents\GitHub\Broker\src\main\java\interfaces\Observador.java
 C:\Users\Admin\Documents\GitHub\Broker\src\main\java\observables\ObservableEliminarPublicacion.java
 C:\Users\Admin\Documents\GitHub\Broker\src\main\java\estrategias\SolicitudEditarComentario.java
 C:\Users\Admin\Documents\GitHub\Broker\src\main\java\observables\ObservableRegistrarComentario.java
@@ -25,4 +24,6 @@ C:\Users\Admin\Documents\GitHub\Broker\src\main\java\estrategias\SolicitudRegist
 C:\Users\Admin\Documents\GitHub\Broker\src\main\java\estrategias\SolicitudEliminarPublicacion.java
 C:\Users\Admin\Documents\GitHub\Broker\src\main\java\observables\ObservableEditarComentario.java
 C:\Users\Admin\Documents\GitHub\Broker\src\main\java\estrategias\SolicitudConsultarPublicaciones.java
+C:\Users\Admin\Documents\GitHub\Broker\src\main\java\estrategias\SolicitudConsultarPublicacionesHashtag.java
+C:\Users\Admin\Documents\GitHub\Broker\src\main\java\interfaces\IObservador.java
 C:\Users\Admin\Documents\GitHub\Broker\src\main\java\estrategias\SolicitudIniciarSesion.java

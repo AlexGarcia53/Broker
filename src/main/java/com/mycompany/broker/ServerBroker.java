@@ -10,17 +10,25 @@ import java.net.ServerSocket;
 import java.net.Socket;
 
 /**
- *
- * @author Admin
+ * Clase que representa al servidor del broker, el cual se ejecuta y comienza a escuchar por peticiones, 
+ * para el manejo de estas añade estas conexiones a un ControladorClientes y lo ejecuta como un hilo.
+ * @author Equipo Broker.
  */
 public class ServerBroker {
-
+    /**
+     * Atributo del tipo socket servidor.
+     */
     private ServerSocket serverSocket;
-
+    /**
+     * Método constructor de la clase que inicializa el atributo de esta mediante el parámetro dado.
+     * @param serverSocket Socket de tipo servidor.
+     */
     public ServerBroker(ServerSocket serverSocket) {
         this.serverSocket = serverSocket;
     }
-    
+    /**
+     * Método utilizado para que el servidor comience a escuchar peticiones.
+     */
     public void inciarServidor(){
         try{
             while(!serverSocket.isClosed()){
@@ -37,7 +45,9 @@ public class ServerBroker {
             this.cerrarServerSocket();
         }
     }
-    
+    /**
+     * Método utilizado para cerrar el socket del servidor.
+     */
     public void cerrarServerSocket(){
         try{
             if(serverSocket!=null){
@@ -47,7 +57,12 @@ public class ServerBroker {
             e.printStackTrace();
         }
     }
-    
+    /**
+     * Método main de la clase que crea un socket de tipo servidor, crea una instancia de la clase 
+     * y hace que comience a escuchar por peticiones.
+     * @param args Línea de argumentos.
+     * @throws IOException Excepción que puede ser lanzada a lo largo de la ejecución.
+     */
     public static void main(String[] args) throws IOException{
         ServerSocket serverSocket= new ServerSocket(5000);
         ServerBroker serverBroker=new ServerBroker(serverSocket);

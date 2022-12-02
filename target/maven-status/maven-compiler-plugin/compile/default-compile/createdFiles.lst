@@ -6,7 +6,6 @@ com\mycompany\broker\ControladorClientes.class
 estrategias\SolicitudDesuscripcion.class
 observables\ObservableRegistrarPublicacion.class
 observables\ObservableRegistrarComentario.class
-interfaces\Observador.class
 com\mycompany\broker\Deserealizador.class
 estrategias\SolicitudEnviarMensaje.class
 estrategias\SolicitudRegistrarComentario.class
@@ -23,8 +22,10 @@ com\mycompany\broker\Broker.class
 estrategias\SolicitudIniciarSesionFacebook.class
 estrategias\SolicitudConsultarUsuarioNombre.class
 estrategias\SolicitudEditarUsuario.class
+estrategias\SolicitudConsultarPublicacionesHashtag.class
 estrategias\SolicitudEliminarComentario.class
 observables\ObservableEditarPublicacion.class
+interfaces\IObservador.class
 estrategias\SolicitudEditarPublicacion.class
 estrategias\SolicitudIniciarSesion.class
 estrategias\SolicitudRegistrarPublicacion.class

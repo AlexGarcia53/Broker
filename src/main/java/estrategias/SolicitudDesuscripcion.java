@@ -7,11 +7,15 @@ package estrategias;
 import interfaces.IEstrategia;
 
 /**
- *
- * @author Admin
+ * Clase encargada del envío de una solicitud del tipo desuscribirse a un evento.
+ * @author Equipo Broker.
  */
 public class SolicitudDesuscripcion implements IEstrategia{
-
+    /**
+     * Método encargado de enviar la solicitud al servidor y devolver la respuesta que le dió este último.
+     * @param solicitud String con la solicitud a enviar.
+     * @return Respuesta del servidor.
+     */
     @Override
     public String enviarSolicitud(String solicitud) {
         return "Desuscripcion";
