@@ -7,7 +7,7 @@ package observables;
 import com.mycompany.broker.Deserealizador;
 import dominio.Operacion;
 import dominio.Solicitud;
-import interfaces.Observador;
+import interfaces.IObservador;
 
 /**
  *
@@ -27,7 +27,7 @@ public class CanalizadorSuscripciones {
         return canalizadorSuscripciones;
     }
     
-    public void canalizarSolicitud(String solicitud, Observador suscriptor){
+    public void canalizarSolicitud(String solicitud, IObservador suscriptor){
         Solicitud solicitudSuscripcion= Deserealizador.getInstancia().deserializarSolicitud(solicitud);
         Operacion operacion= solicitudSuscripcion.getOperacion();
         switch(operacion){

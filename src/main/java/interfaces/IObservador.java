@@ -10,6 +10,6 @@ import dominio.Solicitud;
  *
  * @author Admin
  */
-public interface Observador {
+public interface IObservador {
     public void notificar(String actualizacion);
 }

@@ -5,7 +5,7 @@
 package com.mycompany.broker;
 
 import dominio.Solicitud;
-import interfaces.Observador;
+import interfaces.IObservador;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -23,12 +23,12 @@ import observables.CanalizadorSuscripciones;
  *
  * @author Admin
  */
-public class ControladorClientes implements Runnable, Observador{
+public class ControladorClientes implements Runnable, IObservador{
     private Socket socket;
     private BufferedReader bufferedReader;
     private BufferedWriter bufferedWriter;
 //    private String clientUsername;
-    private Broker broker;
+//    private Broker broker;
     
     public ControladorClientes(Socket socket){
         try{
@@ -37,7 +37,7 @@ public class ControladorClientes implements Runnable, Observador{
             this.bufferedReader= new BufferedReader(new InputStreamReader(socket.getInputStream()));
 //            this.clientUsername= bufferedReader.readLine();
 //            System.out.println("se ha conectado un cliente");
-            this.broker= Broker.obtenerInstancia();
+//            this.broker= Broker.obtenerInstancia();
 //            broker.agregarNuevoCliente(this);
 //            broker.suscribirCliente(this);
         } catch (IOException e){
@@ -55,7 +55,7 @@ public class ControladorClientes implements Runnable, Observador{
                 mensajeCliente= bufferedReader.readLine();
                 if(mensajeCliente!=null){
                     System.out.println(mensajeCliente);
-                    respuesta= broker.canalizarSolicitud(mensajeCliente);
+                    respuesta= Broker.obtenerInstancia().canalizarSolicitud(mensajeCliente);
                     if(respuesta.startsWith("Suscripcion") || respuesta.startsWith("Desuscripcion")){
                         CanalizadorSuscripciones.getInstancia().canalizarSolicitud(mensajeCliente, this);
                     }else{
@@ -100,7 +100,7 @@ public class ControladorClientes implements Runnable, Observador{
 //    }
     
     public void eliminarControladorCliente(){
-        broker.desuscribirCliente(this);
+        Broker.obtenerInstancia().desuscribirCliente(this);
 //        retransmitirMensaje("Servidor: "+clientUsername+" ha cerrado la aplicación");
     }
     

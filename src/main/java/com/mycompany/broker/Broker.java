@@ -16,10 +16,11 @@ import dominio.Publicacion;
 import dominio.Usuario;
 import estrategias.*;
 import interfaces.IEstrategia;
-import interfaces.Observador;
+import interfaces.IObservador;
 import java.io.OutputStreamWriter;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.List;
 import observables.ObservableEditarComentario;
 import observables.ObservableEditarPublicacion;
 import observables.ObservableEliminarComentario;
@@ -32,10 +33,10 @@ import observables.ObservableRegistrarPublicacion;
  * @author Admin
  */
 public class Broker {
-    private String HOST= "127.0.0.1";
-    private int PUERTO= 5001;
+//    private String HOST= "127.0.0.1";
+//    private int PUERTO= 5001;
     private static Broker broker;
-    private ArrayList<Observador> suscriptores= new ArrayList<>();
+    private List<IObservador> suscriptores= new ArrayList<>();
     
     private Broker(){
         
@@ -48,11 +49,11 @@ public class Broker {
         return broker;
     }
     
-    public void suscribirCliente(Observador suscriptor){
+    public void suscribirCliente(IObservador suscriptor){
         this.suscriptores.add(suscriptor);
     }
     
-    public void desuscribirCliente(Observador suscriptor){
+    public void desuscribirCliente(IObservador suscriptor){
         this.suscriptores.remove(suscriptor);
     }
     
@@ -183,6 +184,10 @@ public class Broker {
             }
             case registrar_mensaje:{
                 estrategia= new SolicitudEnviarMensaje();
+                break;
+            }
+            case consultar_publicacionesHashtag:{
+                estrategia= new SolicitudConsultarPublicacionesHashtag();
                 break;
             }
         }
